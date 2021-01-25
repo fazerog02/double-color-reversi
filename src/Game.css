@@ -1,6 +1,17 @@
+.field{
+    /*margin-top: 10vmin;*/
+}
+.fieldWrapper{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    width: 100vw;
+    height: 100vh;
+}
 .fieldLine {
     display: flex;
 }
+
 
 .stoneElement{
     width: 90%;
@@ -10,7 +21,6 @@
     color: white;
     position: relative;
 }
-
 .stoneElement span{
     position: absolute;
     top: 50%;

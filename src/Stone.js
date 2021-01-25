@@ -9,10 +9,9 @@ export default function Stone(props){
         const added_value = props.value <= 1 ? null : <span>{"+" + (props.value - 1).toString()}</span>;
         return <div className="stoneElement" style={{backgroundColor: props.color}}>{added_value}</div>
     }
-
     const stone_element = createStoneElement();
 
     return(
-        <div style={{width: "50px", height: "50px", border: "1px solid black"}} onClick={() => props.onClick()}>{stone_element}</div>
+        <div style={{width: props.size, height: props.size, border: "1px solid black"}} onClick={() => props.onClick()}>{stone_element}</div>
     );
 }

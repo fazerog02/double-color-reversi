@@ -5,19 +5,21 @@ import "./Game.css";
 
 
 export default function Field(props){
-    const createStone = (row, col, stone) => {
+    const createStone = (position, stone) => {
         return <Stone
-            key={row.toString() + col.toString()}
+            key={position.row.toString() + position.col.toString()}
+            size={(80 / props.size).toString() + "vmin"}
             color={stone.color}
             value={stone.value}
-            onClick={() => props.setStone(row, col)}
+            onClick={() => props.setStone(position)}
         />;
     };
 
     const initFieldLine = (row) => {
         let stone_line = [];
         for(let col = 0; col < props.size; col++){
-            const stone = createStone(row, col, props.data[row][col]);
+            const position = {row: row, col: col};
+            const stone = createStone(position, props.data[row][col]);
             stone_line.push(stone);
         }
         return <div key={row.toString()} className="fieldLine">{stone_line}</div>;
@@ -28,12 +30,12 @@ export default function Field(props){
         for(let row = 0; row < props.size; row++){
             stone_field.push(initFieldLine(row));
         }
-        return <div>{stone_field}</div>;
+        return <div className="field">{stone_field}</div>;
     };
 
     const field_stones = useMemo(() => initFiled(), [props.data]);
 
     return(
-        <div>{field_stones}</div>
+        <div className="fieldWrapper">{field_stones}</div>
     );
 }
