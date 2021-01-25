@@ -35,6 +35,17 @@ export default function Game() {
         }))));
     };
 
+    const createInitField = () => {
+        let field = createEmptyField();
+        const base_position = {row: fieldSize / 2 - 2, col: fieldSize / 2 - 2};
+        for(let i = 0; i < 4; i++){
+            for(let j = 0; j < 4; j++){
+                field[base_position.row + i][base_position.col + j] = {color: playerColors[(i + j) % 4], value: 1};
+            }
+        }
+        return field;
+    };
+
     const [isGameStart, setIsGameStart] = useState(false);
     const [isGameEnd, setIsGameEnd] = useState(false);
     const [turn, setTurn] = useState(0);
@@ -44,7 +55,8 @@ export default function Game() {
     const [fieldData, setFieldData] = useState(null);
 
     const startGame = () => {
-        setFieldData(createEmptyField());
+        setFieldData(createInitField());
+
         setPlayerNames(shuffle(playerNames));
         setIsGameStart(true);
     };
@@ -59,6 +71,7 @@ export default function Game() {
     };
 
     const endTurn = () => {
+        console.log(playerColors[(turn + 1) % 4])
         if(checkGameEnd()){
             setIsGameEnd(true);
             return;
@@ -83,9 +96,30 @@ export default function Game() {
     };
 
     const reverseStone = (position, color) => {
-        if(fieldData[position.row][position.col].color === null || fieldData[position.row][position.col].color === color) return;
-        changeStoneColor(position, color);
-        // if()
+        if(fieldData[position.row][position.col].color === color) return;
+        if(fieldData[position.row][position.col].color === null){
+            changeStoneColor(position, color);
+            addStoneValue(position, 1);
+            return;
+        }
+
+        let color_index = null;
+        for(let i = 0; i < playerColors.length; i++){
+            if(fieldData[position.row][position.col].color === playerColors[i]) color_index = i;
+        }
+        if(color_index === null) return;
+
+        if(turn % 2 === color_index % 2){
+            // 自分の他の色のとき
+            changeStoneColor(position, color);
+            addStoneValue(position, 1);
+        }else{
+            if(fieldData[position.row][position.col].value >= 2){
+                addStoneValue(position, -1);
+            }else{
+                changeStoneColor(position, color);
+            }
+        }
     };
 
     const getReversiblePositions = (position, color) => {
@@ -125,10 +159,9 @@ export default function Game() {
 
         const reversible_positions = getReversiblePositions(position, now_color);
         console.log(reversible_positions);
-        // if(reversible_positions == false) return;
+        if(reversible_positions == false) return;
 
-        changeStoneColor(position, now_color);
-        // for(let i = 0; i < reversible_positions.length; i++) reverseStone(reversible_positions[i], now_color);
+        for(let i = 0; i < reversible_positions.length; i++) reverseStone(reversible_positions[i], now_color);
         endTurn();
     };
 
