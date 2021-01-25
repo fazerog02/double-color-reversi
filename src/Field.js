@@ -10,7 +10,7 @@ export default function Field(props){
             key={row.toString() + col.toString()}
             color={stone.color}
             value={stone.value}
-            onClick={() => props.changeColor(row, col, "black")}
+            onClick={() => props.setStone(row, col)}
         />;
     };
 
