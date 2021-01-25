@@ -61,6 +61,23 @@ export default function Game() {
         setIsGameStart(true);
     };
 
+    const endGame = () => {
+        let result = [0, 0];
+        for(let row = 0; row < fieldData.length; row++){
+            for(let col = 0; col < fieldData[row].length; col++){
+                for(let k = 0; k < playerColors.length; k++){
+                    if(fieldData[row][col].color === playerColors[k]){
+                        result[k % 2]++;
+                        break;
+                    }
+                }
+            }
+        }
+        console.log(result);
+
+        setIsGameEnd(true);
+    };
+
     const checkGameEnd = () => {
         for(let row = 0; row < fieldData.length; row++){
             for(let col = 0; col < fieldData[row].length; col++){
@@ -73,7 +90,7 @@ export default function Game() {
     const endTurn = () => {
         console.log(playerColors[(turn + 1) % 4])
         if(checkGameEnd()){
-            setIsGameEnd(true);
+            endGame();
             return;
         }
         setTurn(turn + 1);
@@ -155,6 +172,8 @@ export default function Game() {
     };
 
     const setStone = (position) => {
+        if(fieldData[position.row][position.col].color !== null) return;
+
         let now_color = playerColors[turn % 4];
 
         const reversible_positions = getReversiblePositions(position, now_color);
