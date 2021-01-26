@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import Stone from "./Stone";
 
 import "./Game.css";
@@ -33,7 +33,7 @@ export default function Field(props){
         return <div className="field">{stone_field}</div>;
     };
 
-    const field_stones = useMemo(() => initFiled(), [props.data]);
+    const field_stones = initFiled();
 
     return(
         <div className="fieldWrapper">{field_stones}</div>

@@ -38,11 +38,26 @@ export default function Game() {
     const createInitField = () => {
         let field = createEmptyField();
         const base_position = {row: fieldSize / 2 - 2, col: fieldSize / 2 - 2};
-        for(let i = 0; i < 4; i++){
-            for(let j = 0; j < 4; j++){
-                field[base_position.row + i][base_position.col + j] = {color: playerColors[(i + j) % 4], value: 1};
-            }
-        }
+        field[base_position.row][base_position.col] = {color: playerColors[0], value: 1};
+        field[base_position.row][base_position.col + 1] = {color: playerColors[1], value: 1};
+        field[base_position.row][base_position.col + 2] = {color: playerColors[2], value: 1};
+        field[base_position.row][base_position.col + 3] = {color: playerColors[3], value: 1};
+
+        field[base_position.row + 1][base_position.col] = {color: playerColors[1], value: 1};
+        field[base_position.row + 1][base_position.col + 1] = {color: playerColors[0], value: 1};
+        field[base_position.row + 1][base_position.col + 2] = {color: playerColors[3], value: 1};
+        field[base_position.row + 1][base_position.col + 3] = {color: playerColors[2], value: 1};
+
+        field[base_position.row + 2][base_position.col] = {color: playerColors[2], value: 1};
+        field[base_position.row + 2][base_position.col + 1] = {color: playerColors[3], value: 1};
+        field[base_position.row + 2][base_position.col + 2] = {color: playerColors[0], value: 1};
+        field[base_position.row + 2][base_position.col + 3] = {color: playerColors[1], value: 1};
+
+        field[base_position.row + 3][base_position.col] = {color: playerColors[3], value: 1};
+        field[base_position.row + 3][base_position.col + 1] = {color: playerColors[2], value: 1};
+        field[base_position.row + 3][base_position.col + 2] = {color: playerColors[1], value: 1};
+        field[base_position.row + 3][base_position.col + 3] = {color: playerColors[0], value: 1};
+
         return field;
     };
 
@@ -53,26 +68,31 @@ export default function Game() {
     const [playerColors, setPlayerColors] = useState(["black", "red", "blue", "green"]);  // [p1, p2, p1, p2]
     const [fieldSize, setFieldSize] = useState(10);
     const [fieldData, setFieldData] = useState(null);
+    const [points, setPoints] = useState([8, 8]);
 
     const startGame = () => {
         setFieldData(createInitField());
-
         setPlayerNames(shuffle(playerNames));
         setIsGameStart(true);
     };
 
-    const endGame = () => {
+    const getPoints = () => {
         let result = [0, 0];
         for(let row = 0; row < fieldData.length; row++){
             for(let col = 0; col < fieldData[row].length; col++){
                 for(let k = 0; k < playerColors.length; k++){
                     if(fieldData[row][col].color === playerColors[k]){
-                        result[k % 2]++;
+                        result[k % 2] += fieldData[row][col].value;
                         break;
                     }
                 }
             }
         }
+        return result;
+    }
+
+    const endGame = () => {
+        const result = getPoints();
         console.log(result);
 
         setIsGameEnd(true);
@@ -88,11 +108,11 @@ export default function Game() {
     };
 
     const endTurn = () => {
-        console.log(playerColors[(turn + 1) % 4])
         if(checkGameEnd()){
             endGame();
             return;
         }
+        setPoints(getPoints());
         setTurn(turn + 1);
     };
 
@@ -122,7 +142,7 @@ export default function Game() {
 
         let color_index = null;
         for(let i = 0; i < playerColors.length; i++){
-            if(fieldData[position.row][position.col].color === playerColors[i]) color_index = i;
+            if(fieldData[position.row][position.col].color === JSON.parse(JSON.stringify(playerColors[i]))) color_index = i;
         }
         if(color_index === null) return;
 
@@ -174,10 +194,9 @@ export default function Game() {
     const setStone = (position) => {
         if(fieldData[position.row][position.col].color !== null) return;
 
-        let now_color = playerColors[turn % 4];
+        const now_color = playerColors[turn % 4];
 
         const reversible_positions = getReversiblePositions(position, now_color);
-        console.log(reversible_positions);
         if(reversible_positions == false) return;
 
         for(let i = 0; i < reversible_positions.length; i++) reverseStone(reversible_positions[i], now_color);
@@ -193,7 +212,17 @@ export default function Game() {
                     <button type="button" onClick={() => startGame()}>start</button>
                 </div>
             :
-                <Field data={fieldData} size={fieldSize} setStone={isGameEnd ? () => {} : setStone} />
+                <div>
+                    <div>
+                        <span>{playerNames[0]}: <span style={{color: playerColors[0]}}>{playerColors[0]}</span>, <span style={{color: playerColors[2]}}>{playerColors[2]}</span>　</span>
+                        <span>{playerNames[1]}: <span style={{color: playerColors[1]}}>{playerColors[1]}</span>, <span style={{color: playerColors[3]}}>{playerColors[3]}</span></span>
+                    </div>
+                    <span>turn: <span style={{color: playerColors[turn % 4]}}>{playerColors[turn % 4]}</span>　</span>
+                    <span>{playerNames[0]}: {points[0]}　</span>
+                    <span>{playerNames[1]}: {points[1]}</span>
+                    <div><button type="button" onClick={() => endTurn()}>pass</button></div>
+                    <Field data={fieldData} size={fieldSize} setStone={isGameEnd ? () => {} : setStone} />
+                </div>
             }
         </div>
     );
