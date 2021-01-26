@@ -82,7 +82,7 @@ export default function Game() {
             for(let col = 0; col < fieldData[row].length; col++){
                 for(let k = 0; k < playerColors.length; k++){
                     if(fieldData[row][col].color === playerColors[k]){
-                        result[k % 2] += 2 * fieldData[row][col].value;
+                        result[k % 2] += fieldData[row][col].value ** 2;
                         break;
                     }
                 }
