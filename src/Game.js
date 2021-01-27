@@ -2,6 +2,7 @@ import React , { useState } from "react";
 
 import './Game.css';
 import Field from "./Field";
+import AvatarSelect from "./AvatarSelect";
 
 
 const shuffle = (ary) => {
@@ -23,9 +24,20 @@ export default function Game() {
                 setPlayerNames([e.target.value, playerNames[1]]);
                 break;
             case "player1":
+                const field_size = parseInt(e.target.value);
+                if(playerNames[0] === "size" && !isNaN(field_size)){
+                    // 隠しコマンド(size, num)で4以上100以下の値に盤面の大きさを変えられる
+                    if(field_size >= 4 && field_size <= 100) setFieldSize(field_size);
+                }
                 setPlayerNames([playerNames[0], e.target.value]);
                 break;
         }
+    };
+
+    const setPlayerColor = (color, index) => {
+        let player_colors = JSON.parse(JSON.stringify(playerColors));
+        player_colors[index] = color;
+        setPlayerColors(player_colors);
     };
 
     const createEmptyField = () => {
@@ -207,21 +219,46 @@ export default function Game() {
         <div>
             {!isGameStart ?
                 <div>
-                    <input name="player0" type="text" value={playerNames[0]} onChange={(e) => onChangePlayerName(e)} />
-                    <input name="player1" type="text" value={playerNames[1]} onChange={(e) => onChangePlayerName(e)} />
+                    <div>
+                        <input name="player0" type="text" value={playerNames[0]} onChange={(e) => onChangePlayerName(e)} />
+                        <p>色1</p>
+                        <AvatarSelect setState={(avatar) => {
+                            if(!playerColors.includes(avatar)) setPlayerColor(avatar, 0);
+                        }} />
+                        <p>色2</p>
+                        <AvatarSelect setState={(avatar) => {
+                            if(!playerColors.includes(avatar)) setPlayerColor(avatar, 2);
+                        }} />
+                    </div>
+                    <div>
+                        <input name="player1" type="text" value={playerNames[1]} onChange={(e) => onChangePlayerName(e)} />
+                        <p>色1</p>
+                        <AvatarSelect setState={(avatar) => {
+                            if(!playerColors.includes(avatar)) setPlayerColor(avatar, 1);
+                        }} />
+                        <p>色2</p>
+                        <AvatarSelect setState={(avatar) => {
+                            if(!playerColors.includes(avatar)) setPlayerColor(avatar, 3);
+                        }} />
+                    </div>
                     <button type="button" onClick={() => startGame()}>start</button>
                 </div>
             :
                 <div>
                     <div>
-                        <span>{playerNames[0]}: <span style={{color: playerColors[0]}}>{playerColors[0]}</span>, <span style={{color: playerColors[2]}}>{playerColors[2]}</span>　</span>
-                        <span>{playerNames[1]}: <span style={{color: playerColors[1]}}>{playerColors[1]}</span>, <span style={{color: playerColors[3]}}>{playerColors[3]}</span></span>
+                        <div>
+                            <span>{playerNames[0]}: <span style={{color: playerColors[0]}}>{playerColors[0]}</span>, <span style={{color: playerColors[2]}}>{playerColors[2]}</span>　</span>
+                            <span>{playerNames[1]}: <span style={{color: playerColors[1]}}>{playerColors[1]}</span>, <span style={{color: playerColors[3]}}>{playerColors[3]}</span></span>
+                        </div>
+                        <span>turn: <span style={{color: playerColors[turn % 4]}}>{playerColors[turn % 4]}</span>　</span>
+                        <span>{playerNames[0]}: {points[0]}　</span>
+                        <span>{playerNames[1]}: {points[1]}</span>
+                        <div><button type="button" onClick={() => endTurn()}>pass</button></div>
+                        <Field data={fieldData} size={fieldSize} setStone={isGameEnd ? () => {} : setStone} />
                     </div>
-                    <span>turn: <span style={{color: playerColors[turn % 4]}}>{playerColors[turn % 4]}</span>　</span>
-                    <span>{playerNames[0]}: {points[0]}　</span>
-                    <span>{playerNames[1]}: {points[1]}</span>
-                    <div><button type="button" onClick={() => endTurn()}>pass</button></div>
-                    <Field data={fieldData} size={fieldSize} setStone={isGameEnd ? () => {} : setStone} />
+                    <div className="fadeTrans fullScreen" style={{visibility: isGameEnd ? "visible" : "hidden", opacity: isGameEnd ? 1 : 0}}>
+                        end
+                    </div>
                 </div>
             }
         </div>
