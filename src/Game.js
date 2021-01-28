@@ -1,4 +1,4 @@
-import React , { useState } from "react";
+import React , { useState, useEffect } from "react";
 
 import './Game.css';
 import Field from "./Field";
@@ -47,9 +47,31 @@ export default function Game() {
         }))));
     };
 
-    const createInitField = () => {
+    const [isGameStart, setIsGameStart] = useState(false);
+    const [isGameEnd, setIsGameEnd] = useState(false);
+    const [turn, setTurn] = useState(0);
+    const [playerNames, setPlayerNames] = useState(["player1", "player2"]);  // p1とp2の名前をランダムで入れ替えれば先行のランダム性が確保できる
+    const [playerColors, setPlayerColors] = useState(["black", "red", "blue", "green"]);  // [p1, p2, p1, p2]
+    const [fieldSize, setFieldSize] = useState(10);
+    const [fieldData, setFieldData] = useState(createEmptyField());
+    const [points, setPoints] = useState([8, 8]);
+    const [settablePositions, setSettablePositions] = useState([]);
+
+    useEffect(() => {
+        let settable_positions = [];
+        for(let row = 0; row < fieldSize; row++){
+            for(let col = 0; col < fieldSize; col++){
+                let position = {row: row, col: col};
+                if(getReversiblePositions(position) != false) settable_positions.push(position);
+            }
+        }
+        setSettablePositions(settable_positions);
+    }, [turn, fieldData]);
+
+    const initField = () => {
         let field = createEmptyField();
         const base_position = {row: fieldSize / 2 - 2, col: fieldSize / 2 - 2};
+
         field[base_position.row][base_position.col] = {color: playerColors[0], value: 1};
         field[base_position.row][base_position.col + 1] = {color: playerColors[1], value: 1};
         field[base_position.row][base_position.col + 2] = {color: playerColors[2], value: 1};
@@ -70,20 +92,11 @@ export default function Game() {
         field[base_position.row + 3][base_position.col + 2] = {color: playerColors[1], value: 1};
         field[base_position.row + 3][base_position.col + 3] = {color: playerColors[0], value: 1};
 
-        return field;
+        setFieldData(field);
     };
 
-    const [isGameStart, setIsGameStart] = useState(false);
-    const [isGameEnd, setIsGameEnd] = useState(false);
-    const [turn, setTurn] = useState(0);
-    const [playerNames, setPlayerNames] = useState(["player1", "player2"]);  // p1とp2の名前をランダムで入れ替えれば先行のランダム性が確保できる
-    const [playerColors, setPlayerColors] = useState(["black", "red", "blue", "green"]);  // [p1, p2, p1, p2]
-    const [fieldSize, setFieldSize] = useState(10);
-    const [fieldData, setFieldData] = useState(null);
-    const [points, setPoints] = useState([8, 8]);
-
     const startGame = () => {
-        setFieldData(createInitField());
+        initField();
         setPlayerNames(shuffle(playerNames));
         setIsGameStart(true);
     };
@@ -254,7 +267,7 @@ export default function Game() {
                         <span>{playerNames[0]}: {points[0]}　</span>
                         <span>{playerNames[1]}: {points[1]}</span>
                         <div><button type="button" onClick={() => endTurn()}>pass</button></div>
-                        <Field data={fieldData} size={fieldSize} setStone={isGameEnd ? () => {} : setStone} />
+                        <Field data={fieldData} size={fieldSize} setStone={isGameEnd ? () => {} : setStone} settablePositions={settablePositions} />
                     </div>
                     <div className="fadeTrans fullScreen" style={{visibility: isGameEnd ? "visible" : "hidden", opacity: isGameEnd ? 1 : 0}}>
                         end

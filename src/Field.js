@@ -6,11 +6,20 @@ import "./Game.css";
 
 export default function Field(props){
     const createStone = (position, stone) => {
+        let is_settable = false;
+        for(let i = 0; i < props.settablePositions.length; i++){
+            if(props.settablePositions[i].row === position.row && props.settablePositions[i].col === position.col){
+                is_settable  = true;
+                break;
+            }
+        }
+
         return <Stone
             key={position.row.toString() + position.col.toString()}
             size={(80 / props.size).toString() + "vmin"}
             color={stone.color}
             value={stone.value}
+            isSettable={is_settable}
             onClick={() => props.setStone(position)}
         />;
     };

@@ -4,7 +4,6 @@ import React from "react";
 export default function AvatarSelect(props){
     const onChangeColor = (e) => {
         props.setState(e.target.value);
-        console.log(e.target.value);
     };
 
     const onChangeImage = (e) => {
@@ -12,7 +11,6 @@ export default function AvatarSelect(props){
         const reader = new FileReader();
         reader.addEventListener("load", () => {
             props.setState(`url(${reader.result})`);
-            console.log(`url(${reader.result})`);
         });
         reader.readAsDataURL(image);
     };

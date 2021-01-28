@@ -22,6 +22,6 @@ export default function Stone(props){
     const stone_element = createStoneElement();
 
     return(
-        <div style={{width: props.size, height: props.size, border: "1px solid black"}} onClick={() => props.onClick()}>{stone_element}</div>
+        <div style={{width: props.size, height: props.size, border: "1px solid black", backgroundColor: props.isSettable ? "#ffa399" : "none"}} onClick={() => props.onClick()}>{stone_element}</div>
     );
 }
