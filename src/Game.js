@@ -16,8 +16,61 @@ const shuffle = (ary) => {
     return ary;
 };
 
+const createEmptyField = (field_size) => {
+    return JSON.parse(JSON.stringify(Array(field_size).fill(Array(field_size).fill({
+        color: null,
+        value: 0
+    }))));
+};
+
+const createInitField = (field_size, player_colors) => {
+    let field = createEmptyField(field_size);
+    const base_position = {row: field_size / 2 - 2, col: field_size / 2 - 2};
+
+    field[base_position.row][base_position.col] = {color: player_colors[0], value: 1};
+    field[base_position.row][base_position.col + 1] = {color: player_colors[1], value: 1};
+    field[base_position.row][base_position.col + 2] = {color: player_colors[2], value: 1};
+    field[base_position.row][base_position.col + 3] = {color: player_colors[3], value: 1};
+
+    field[base_position.row + 1][base_position.col] = {color: player_colors[1], value: 1};
+    field[base_position.row + 1][base_position.col + 1] = {color: player_colors[0], value: 1};
+    field[base_position.row + 1][base_position.col + 2] = {color: player_colors[3], value: 1};
+    field[base_position.row + 1][base_position.col + 3] = {color: player_colors[2], value: 1};
+
+    field[base_position.row + 2][base_position.col] = {color: player_colors[2], value: 1};
+    field[base_position.row + 2][base_position.col + 1] = {color: player_colors[3], value: 1};
+    field[base_position.row + 2][base_position.col + 2] = {color: player_colors[0], value: 1};
+    field[base_position.row + 2][base_position.col + 3] = {color: player_colors[1], value: 1};
+
+    field[base_position.row + 3][base_position.col] = {color: player_colors[3], value: 1};
+    field[base_position.row + 3][base_position.col + 1] = {color: player_colors[2], value: 1};
+    field[base_position.row + 3][base_position.col + 2] = {color: player_colors[1], value: 1};
+    field[base_position.row + 3][base_position.col + 3] = {color: player_colors[0], value: 1};
+
+    return field;
+};
+
 
 export default function Game() {
+    const [isGameStart, setIsGameStart] = useState(false);
+    const [isGameEnd, setIsGameEnd] = useState(false);
+
+    const [fieldSize, setFieldSize] = useState(10);
+    const [playerNames, setPlayerNames] = useState(["player1", "player2"]);  // p1とp2の名前をランダムで入れ替えれば先行のランダム性が確保できる
+    const [playerColors, setPlayerColors] = useState(["black", "red", "blue", "green"]);  // [p1, p2, p1, p2]
+
+    const [turn, setTurn] = useState(0);
+    const [fieldData, setFieldData] = useState(null);
+    const [points, setPoints] = useState([0, 0]);
+    const [settablePositions, setSettablePositions] = useState([]);
+
+
+    const setPlayerColor = (color, index) => {
+        let player_colors = JSON.parse(JSON.stringify(playerColors));
+        player_colors[index] = color;
+        setPlayerColors(player_colors);
+    };
+
     const onChangePlayerName = (e) => {
         switch(e.target.name){
             case "player0":
@@ -34,71 +87,13 @@ export default function Game() {
         }
     };
 
-    const setPlayerColor = (color, index) => {
-        let player_colors = JSON.parse(JSON.stringify(playerColors));
-        player_colors[index] = color;
-        setPlayerColors(player_colors);
-    };
-
-    const createEmptyField = () => {
-        return JSON.parse(JSON.stringify(Array(fieldSize).fill(Array(fieldSize).fill({
-            color: null,
-            value: 0
-        }))));
-    };
-
-    const [isGameStart, setIsGameStart] = useState(false);
-    const [isGameEnd, setIsGameEnd] = useState(false);
-    const [turn, setTurn] = useState(0);
-    const [playerNames, setPlayerNames] = useState(["player1", "player2"]);  // p1とp2の名前をランダムで入れ替えれば先行のランダム性が確保できる
-    const [playerColors, setPlayerColors] = useState(["black", "red", "blue", "green"]);  // [p1, p2, p1, p2]
-    const [fieldSize, setFieldSize] = useState(10);
-    const [fieldData, setFieldData] = useState(createEmptyField());
-    const [points, setPoints] = useState([8, 8]);
-    const [settablePositions, setSettablePositions] = useState([]);
-
-    useEffect(() => {
-        let settable_positions = [];
-        for(let row = 0; row < fieldSize; row++){
-            for(let col = 0; col < fieldSize; col++){
-                let position = {row: row, col: col};
-                if(getReversiblePositions(position) != false) settable_positions.push(position);
+    const checkGameEnd = () => {
+        for(let row = 0; row < fieldData.length; row++){
+            for(let col = 0; col < fieldData[row].length; col++){
+                if(fieldData[row][col].color === null) return false;
             }
         }
-        setSettablePositions(settable_positions);
-    }, [turn, fieldData]);
-
-    const initField = () => {
-        let field = createEmptyField();
-        const base_position = {row: fieldSize / 2 - 2, col: fieldSize / 2 - 2};
-
-        field[base_position.row][base_position.col] = {color: playerColors[0], value: 1};
-        field[base_position.row][base_position.col + 1] = {color: playerColors[1], value: 1};
-        field[base_position.row][base_position.col + 2] = {color: playerColors[2], value: 1};
-        field[base_position.row][base_position.col + 3] = {color: playerColors[3], value: 1};
-
-        field[base_position.row + 1][base_position.col] = {color: playerColors[1], value: 1};
-        field[base_position.row + 1][base_position.col + 1] = {color: playerColors[0], value: 1};
-        field[base_position.row + 1][base_position.col + 2] = {color: playerColors[3], value: 1};
-        field[base_position.row + 1][base_position.col + 3] = {color: playerColors[2], value: 1};
-
-        field[base_position.row + 2][base_position.col] = {color: playerColors[2], value: 1};
-        field[base_position.row + 2][base_position.col + 1] = {color: playerColors[3], value: 1};
-        field[base_position.row + 2][base_position.col + 2] = {color: playerColors[0], value: 1};
-        field[base_position.row + 2][base_position.col + 3] = {color: playerColors[1], value: 1};
-
-        field[base_position.row + 3][base_position.col] = {color: playerColors[3], value: 1};
-        field[base_position.row + 3][base_position.col + 1] = {color: playerColors[2], value: 1};
-        field[base_position.row + 3][base_position.col + 2] = {color: playerColors[1], value: 1};
-        field[base_position.row + 3][base_position.col + 3] = {color: playerColors[0], value: 1};
-
-        setFieldData(field);
-    };
-
-    const startGame = () => {
-        initField();
-        setPlayerNames(shuffle(playerNames));
-        setIsGameStart(true);
+        return true;
     };
 
     const getPoints = () => {
@@ -116,72 +111,66 @@ export default function Game() {
         return result;
     }
 
-    const endGame = () => {
-        const result = getPoints();
-        console.log(result);
-
-        setIsGameEnd(true);
-    };
-
-    const checkGameEnd = () => {
-        for(let row = 0; row < fieldData.length; row++){
-            for(let col = 0; col < fieldData[row].length; col++){
-                if(fieldData[row][col].color === null) return false;
+    const getSettablePositions = (color) => {
+        let settable_positions = [];
+        for(let row = 0; row < fieldSize; row++){
+            for(let col = 0; col < fieldSize; col++){
+                let position = {row: row, col: col};
+                if(fieldData[position.row][position.col].color === null){
+                    if(getReversiblePositions(position, color) != false) settable_positions.push(position);
+                }
             }
         }
-        return true;
-    };
+        return settable_positions;
+    }
 
-    const endTurn = () => {
-        if(checkGameEnd()){
-            endGame();
-            return;
-        }
-        setPoints(getPoints());
-        setTurn(turn + 1);
-    };
-
-    const changeStoneColor = (position, color) => {
-        let field_data = fieldData.slice();
-        let stone_data = field_data[position.row][position.col];
+    const changeStoneColor = (field_data, position, color) => {
+        let new_field_data = field_data.slice();
+        let stone_data = new_field_data[position.row][position.col];
         stone_data.color = color;
-        field_data[position.row][position.col] = stone_data;
-        setFieldData(field_data);
+        new_field_data[position.row][position.col] = stone_data;
+        return new_field_data;
     };
 
-    const addStoneValue = (position, num) => {
-        let field_data = fieldData.slice();
-        let stone_data = field_data[position.row][position.col];
+    const addStoneValue = (field_data, position, num) => {
+        let new_field_data = field_data.slice();
+        let stone_data = new_field_data[position.row][position.col];
         stone_data.value = stone_data.value + num;
-        field_data[position.row][position.col] = stone_data;
-        setFieldData(field_data);
+        new_field_data[position.row][position.col] = stone_data;
+        return new_field_data;
     };
 
-    const reverseStone = (position, color) => {
-        if(fieldData[position.row][position.col].color === color) return;
-        if(fieldData[position.row][position.col].color === null){
-            changeStoneColor(position, color);
-            addStoneValue(position, 1);
-            return;
-        }
+    const reverseStones = (field_data, positions, color) => {
+        let new_field_data = field_data.slice();
 
-        let color_index = null;
-        for(let i = 0; i < playerColors.length; i++){
-            if(fieldData[position.row][position.col].color === JSON.parse(JSON.stringify(playerColors[i]))) color_index = i;
-        }
-        if(color_index === null) return;
-
-        if(turn % 2 === color_index % 2){
-            // 自分の他の色のとき
-            changeStoneColor(position, color);
-            addStoneValue(position, 1);
-        }else{
-            if(fieldData[position.row][position.col].value >= 2){
-                addStoneValue(position, -1);
-            }else{
-                changeStoneColor(position, color);
+        positions.forEach((position) => {
+            if(new_field_data[position.row][position.col].color === color) return;
+            if(new_field_data[position.row][position.col].color === null){
+                new_field_data = changeStoneColor(new_field_data, position, color);
+                new_field_data = addStoneValue(new_field_data, position, 1);
+                return new_field_data;
             }
-        }
+
+            let color_index = null;
+            for(let i = 0; i < playerColors.length; i++){
+                if(new_field_data[position.row][position.col].color === playerColors[i]) color_index = i;
+            }
+            if(color_index === null) return;
+
+            if(turn % 2 === color_index % 2){
+                // 自分の他の色のとき
+                new_field_data = changeStoneColor(new_field_data, position, color);
+                new_field_data = addStoneValue(new_field_data, position, 1);
+            }else{
+                if(new_field_data[position.row][position.col].value >= 2){
+                    new_field_data = addStoneValue(new_field_data, position, -1);
+                }else{
+                    new_field_data = changeStoneColor(new_field_data, position, color);
+                }
+            }
+        });
+
+        return new_field_data;
     };
 
     const getReversiblePositions = (position, color) => {
@@ -216,16 +205,59 @@ export default function Game() {
         return reversible_positions;
     };
 
+
+    const startGame = () => {
+        setFieldData(createInitField(fieldSize, playerColors));
+        setPlayerNames(shuffle(playerNames));
+        setIsGameStart(true);
+    };
+
     const setStone = (position) => {
         if(fieldData[position.row][position.col].color !== null) return;
 
-        const now_color = playerColors[turn % 4];
-
-        const reversible_positions = getReversiblePositions(position, now_color);
+        const reversible_positions = getReversiblePositions(position, playerColors[turn % 4]);
         if(reversible_positions == false) return;
 
-        for(let i = 0; i < reversible_positions.length; i++) reverseStone(reversible_positions[i], now_color);
-        endTurn();
+        let new_field_data = fieldData.slice();
+        new_field_data = reverseStones(new_field_data, reversible_positions, playerColors[turn % 4]);
+        setFieldData(new_field_data);
+
+        startNextTurn();
+    };
+
+    useEffect(() => {
+        if(fieldData === null) return;
+
+        setPoints(getPoints());
+
+        let settable_positions = getSettablePositions(playerColors[turn % 4]);
+        if(settable_positions == false){
+            console.log("pass");
+            settable_positions = getSettablePositions(playerColors[(turn + 1) % 4]);
+            setSettablePositions(settable_positions);
+            startNextTurn();
+        }else{
+            setSettablePositions(settable_positions);
+        }
+    }, [fieldData]);
+
+    const startNextTurn = () => {
+        if(checkGameEnd()){
+            endGame();
+            return;
+        }
+
+        if(setSettablePositions == false){
+            console.log("pass");
+            startNextTurn();
+            return;
+        }
+
+        setTurn(turn + 1);
+    };
+
+    const endGame = () => {
+        setIsGameEnd(true);
     };
 
     return(
@@ -266,7 +298,7 @@ export default function Game() {
                         <span>turn: <span style={{color: playerColors[turn % 4]}}>{playerColors[turn % 4]}</span>　</span>
                         <span>{playerNames[0]}: {points[0]}　</span>
                         <span>{playerNames[1]}: {points[1]}</span>
-                        <div><button type="button" onClick={() => endTurn()}>pass</button></div>
+                        {/*<div><button type="button" onClick={() => endTurn()}>pass</button></div>*/}
                         <Field data={fieldData} size={fieldSize} setStone={isGameEnd ? () => {} : setStone} settablePositions={settablePositions} />
                     </div>
                     <div className="fadeTrans fullScreen" style={{visibility: isGameEnd ? "visible" : "hidden", opacity: isGameEnd ? 1 : 0}}>
