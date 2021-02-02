@@ -17,7 +17,7 @@ export default function AvatarSelect(props){
 
     return(
         <div>
-            <input type="color" onChange={(e) => onChangeColor(e)} />
+            <input type="color" value={props.defaultColor} onChange={(e) => onChangeColor(e)} />
             <input type="file" accept="image/*" onChange={(e) => onChangeImage(e)} />
         </div>
     );

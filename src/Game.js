@@ -2,18 +2,14 @@ import React , { useState, useEffect } from "react";
 
 import './Game.css';
 import Field from "./Field";
+import StoneElement from "./StoneElement";
 import AvatarSelect from "./AvatarSelect";
 
 
-const shuffle = (ary) => {
-    ary = ary.slice();
-    for(let i = ary.length - 1; i > 0; i--){
-        let r = Math.floor(Math.random() * (i + 1));
-        let tmp = ary[i];
-        ary[i] = ary[r];
-        ary[r] = tmp;
-    }
-    return ary;
+const getRandomIntInclusive = (min, max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
 };
 
 const createEmptyField = (field_size) => {
@@ -57,7 +53,7 @@ export default function Game() {
 
     const [fieldSize, setFieldSize] = useState(10);
     const [playerNames, setPlayerNames] = useState(["player1", "player2"]);  // p1とp2の名前をランダムで入れ替えれば先行のランダム性が確保できる
-    const [playerColors, setPlayerColors] = useState(["black", "red", "blue", "green"]);  // [p1, p2, p1, p2]
+    const [playerColors, setPlayerColors] = useState(["#000000", "#ff0000", "#0000ff", "#008000"]);  // [p1, p2, p1, p2]
 
     const [turn, setTurn] = useState(0);
     const [fieldData, setFieldData] = useState(null);
@@ -208,7 +204,10 @@ export default function Game() {
 
     const startGame = () => {
         setFieldData(createInitField(fieldSize, playerColors));
-        setPlayerNames(shuffle(playerNames));
+        if(getRandomIntInclusive(1, 2) % 2 === 0){
+            setPlayerNames([playerNames[1], playerNames[0]]);
+            setPlayerColors([playerColors[1], playerColors[0], playerColors[3], playerColors[2]]);
+        }
         setIsGameStart(true);
     };
 
@@ -221,6 +220,8 @@ export default function Game() {
         let new_field_data = fieldData.slice();
         new_field_data = reverseStones(new_field_data, reversible_positions, playerColors[turn % 4]);
         setFieldData(new_field_data);
+
+        console.log(JSON.stringify({field: new_field_data}));
 
         startNextTurn();
     };
@@ -264,43 +265,62 @@ export default function Game() {
         <div>
             {!isGameStart ?
                 <div>
-                    <div>
+                    <div style={{display: "inline-block"}}>
                         <input name="player0" type="text" value={playerNames[0]} onChange={(e) => onChangePlayerName(e)} />
                         <p>色1</p>
-                        <AvatarSelect setState={(avatar) => {
+                        <AvatarSelect defaultColor={playerColors[0]} setState={(avatar) => {
                             if(!playerColors.includes(avatar)) setPlayerColor(avatar, 0);
                         }} />
                         <p>色2</p>
-                        <AvatarSelect setState={(avatar) => {
+                        <AvatarSelect defaultColor={playerColors[2]} setState={(avatar) => {
                             if(!playerColors.includes(avatar)) setPlayerColor(avatar, 2);
                         }} />
                     </div>
-                    <div>
+                    <div style={{display: "inline-block"}}>
                         <input name="player1" type="text" value={playerNames[1]} onChange={(e) => onChangePlayerName(e)} />
                         <p>色1</p>
-                        <AvatarSelect setState={(avatar) => {
+                        <AvatarSelect defaultColor={playerColors[1]} setState={(avatar) => {
                             if(!playerColors.includes(avatar)) setPlayerColor(avatar, 1);
                         }} />
                         <p>色2</p>
-                        <AvatarSelect setState={(avatar) => {
+                        <AvatarSelect defaultColor={playerColors[3]} setState={(avatar) => {
                             if(!playerColors.includes(avatar)) setPlayerColor(avatar, 3);
                         }} />
                     </div>
-                    <button type="button" onClick={() => startGame()}>start</button>
+                    <button style={{display: "block"}} type="button" onClick={() => startGame()}>start</button>
                 </div>
             :
                 <div>
-                    <div>
-                        <div>
-                            <span>{playerNames[0]}: <span style={{color: playerColors[0]}}>{playerColors[0]}</span>, <span style={{color: playerColors[2]}}>{playerColors[2]}</span>　</span>
-                            <span>{playerNames[1]}: <span style={{color: playerColors[1]}}>{playerColors[1]}</span>, <span style={{color: playerColors[3]}}>{playerColors[3]}</span></span>
+                    <div className={"player1Info playerInfo" + (turn % 2 === 0 ? " turnPlayer" : "")}>
+                        <div className="infoStoneFrame">
+                            <StoneElement className="infoStone" color={turn % 2 === 0 ? playerColors[(0 + turn) % 4] : playerColors[(0 + (turn-1)) % 4]} value={null} />
                         </div>
-                        <span>turn: <span style={{color: playerColors[turn % 4]}}>{playerColors[turn % 4]}</span>　</span>
-                        <span>{playerNames[0]}: {points[0]}　</span>
-                        <span>{playerNames[1]}: {points[1]}</span>
-                        {/*<div><button type="button" onClick={() => endTurn()}>pass</button></div>*/}
-                        <Field data={fieldData} size={fieldSize} setStone={isGameEnd ? () => {} : setStone} settablePositions={settablePositions} />
+                        <div className="nextInfoStoneFrame">
+                            <StoneElement className="infoStone" color={turn % 2 === 0 ? playerColors[(2 + turn) % 4] : playerColors[(2 + (turn-1)) % 4]} value={null}  />
+                        </div>
+                        <div className="playerInfoName">{playerNames[0]}</div>
+                        <div className="playerInfoPoint">{points[0]}</div>
                     </div>
+
+                    <div className={"player2Info playerInfo" + (turn % 2 !== 0 ? " turnPlayer" : "")}>
+                        <div className="infoStoneFrame">
+                            <StoneElement className="infoStone" color={turn % 2 === 0 ? playerColors[(1 + turn) % 4] : playerColors[(1 + (turn-1)) % 4]} value={null} />
+                        </div>
+                        <div className="nextInfoStoneFrame">
+                            <StoneElement className="infoStone" color={turn % 2 === 0 ? playerColors[(3 + turn) % 4] : playerColors[(3 + (turn-1)) % 4]} value={null}  />
+                        </div>
+                        <div className="playerInfoName">{playerNames[1]}</div>
+                        <div className="playerInfoPoint">{points[1]}</div>
+                    </div>
+
+                    <Field
+                        data={fieldData}
+                        size={fieldSize}
+                        setStone={
+                            isGameEnd ? () => {} : setStone
+                        }
+                        settablePositions={settablePositions}
+                    />
                     <div className="fadeTrans fullScreen" style={{visibility: isGameEnd ? "visible" : "hidden", opacity: isGameEnd ? 1 : 0}}>
                         end
                     </div>

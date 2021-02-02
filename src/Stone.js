@@ -1,6 +1,7 @@
 import React from "react";
 
 import "./Game.css";
+import StoneElement from "./StoneElement";
 
 
 export default function Stone(props){
@@ -17,7 +18,7 @@ export default function Stone(props){
     const createStoneElement = () => {
         if(props.color === null) return null;
         const added_value = props.value <= 1 ? null : <span style={{color: blackOrWhite(props.color)}}>{"+" + (props.value - 1).toString()}</span>;
-        return <div className="stoneElement" style={{background: props.color}}>{added_value}</div>
+        return <StoneElement color={props.color} value={added_value} />
     }
     const stone_element = createStoneElement();
 
@@ -25,9 +26,10 @@ export default function Stone(props){
         <div
             style={{
                 width: props.size,
-                height: props.size, border: "1px solid black",
+                height: props.size,
                 backgroundColor: props.isSettable ? "#ffa399" : "transparent"
             }}
+            className="stoneFrame"
             onClick={() => props.onClick()}>
             {stone_element}
         </div>
