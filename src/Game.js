@@ -240,7 +240,7 @@ export default function Game() {
         }else{
             setSettablePositions(settable_positions);
         }
-    }, [fieldData]);
+    }, [fieldData, turn]);
 
     const startNextTurn = () => {
         if(checkGameEnd()){
@@ -248,7 +248,7 @@ export default function Game() {
             return;
         }
 
-        if(setSettablePositions == false){
+        if(settablePositions == false){
             console.log("pass");
             startNextTurn();
             return;
@@ -298,7 +298,7 @@ export default function Game() {
                         <div className="nextInfoStoneFrame">
                             <StoneElement className="infoStone" color={turn % 2 === 0 ? playerColors[(2 + turn) % 4] : playerColors[(2 + (turn-1)) % 4]} value={null}  />
                         </div>
-                        <div className="playerInfoName">{playerNames[0]}</div>
+                        <div className="playerInfoName"><span>{playerNames[0]}</span></div>
                         <div className="playerInfoPoint">{points[0]}</div>
                     </div>
 
@@ -309,7 +309,7 @@ export default function Game() {
                         <div className="nextInfoStoneFrame">
                             <StoneElement className="infoStone" color={turn % 2 === 0 ? playerColors[(3 + turn) % 4] : playerColors[(3 + (turn-1)) % 4]} value={null}  />
                         </div>
-                        <div className="playerInfoName">{playerNames[1]}</div>
+                        <div className="playerInfoName"><span>{playerNames[1]}</span></div>
                         <div className="playerInfoPoint">{points[1]}</div>
                     </div>
 
