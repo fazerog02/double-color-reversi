@@ -23,7 +23,7 @@ export default function Field(props){
 
         return <Stone
             key={position.row.toString() + position.col.toString()}
-            size={(80 / props.size).toString() + "vmin"}
+            size={(100 / props.size).toString() + "%"}
             color={stone.color}
             value={stone.value}
             isSettable={is_settable}
@@ -38,7 +38,7 @@ export default function Field(props){
             const stone = createStone(position, props.data[row][col]);
             stone_line.push(stone);
         }
-        return <div key={row.toString()} className="fieldLine">{stone_line}</div>;
+        return <div key={row.toString()} className="fieldLine" style={{height: 100 / props.size + "%"}}>{stone_line}</div>;
     };
 
     const initFiled = () => {

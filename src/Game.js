@@ -4,12 +4,15 @@ import './Game.css';
 import Field from "./Field";
 import StoneElement from "./StoneElement";
 import AvatarSelect from "./AvatarSelect";
+import Dialog from "./Dialog";
+
+import { TwitterShareButton, TwitterIcon } from "react-share";
 
 
 const getRandomIntInclusive = (min, max) => {
     min = Math.ceil(min);
     max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
+    return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
 const createEmptyField = (field_size) => {
@@ -59,6 +62,8 @@ export default function Game() {
     const [fieldData, setFieldData] = useState(null);
     const [points, setPoints] = useState([0, 0]);
     const [settablePositions, setSettablePositions] = useState([]);
+
+    const [dialog, setDialog] = useState(false);
 
 
     const setPlayerColor = (color, index) => {
@@ -203,11 +208,13 @@ export default function Game() {
 
 
     const startGame = () => {
-        setFieldData(createInitField(fieldSize, playerColors));
+        let player_colors = JSON.parse(JSON.stringify(playerColors));
         if(getRandomIntInclusive(1, 2) % 2 === 0){
+            player_colors = [playerColors[1], playerColors[0], playerColors[3], playerColors[2]];
             setPlayerNames([playerNames[1], playerNames[0]]);
-            setPlayerColors([playerColors[1], playerColors[0], playerColors[3], playerColors[2]]);
+            setPlayerColors(player_colors);
         }
+        setFieldData(createInitField(fieldSize, player_colors));
         setIsGameStart(true);
     };
 
@@ -221,7 +228,6 @@ export default function Game() {
         new_field_data = reverseStones(new_field_data, reversible_positions, playerColors[turn % 4]);
         setFieldData(new_field_data);
 
-        console.log(JSON.stringify({field: new_field_data}));
 
         startNextTurn();
     };
@@ -233,7 +239,6 @@ export default function Game() {
 
         let settable_positions = getSettablePositions(playerColors[turn % 4]);
         if(settable_positions == false){
-            console.log("pass");
             settable_positions = getSettablePositions(playerColors[(turn + 1) % 4]);
             setSettablePositions(settable_positions);
             startNextTurn();
@@ -249,7 +254,6 @@ export default function Game() {
         }
 
         if(settablePositions == false){
-            console.log("pass");
             startNextTurn();
             return;
         }
@@ -259,6 +263,7 @@ export default function Game() {
 
     const endGame = () => {
         setIsGameEnd(true);
+        setDialog(true);
     };
 
     return(
@@ -321,9 +326,21 @@ export default function Game() {
                         }
                         settablePositions={settablePositions}
                     />
-                    <div className="fadeTrans fullScreen" style={{visibility: isGameEnd ? "visible" : "hidden", opacity: isGameEnd ? 1 : 0}}>
-                        end
-                    </div>
+
+                    {isGameEnd ?
+                        <div className="resultOpenButton" onClick={() => setDialog(true)}>result</div>
+                    : null}
+                    <Dialog visible={dialog} closeDialog={() => setDialog(false)}>
+                        <div className="resultDialog">
+                            <div className="resultTitle">{points[0] === points[1] ? "Draw!" : (points[0] > points[1] ? playerNames[0] : playerNames[1]) + " Win!"}</div>
+                            <div className="resultPoints">{points[0]} 対 {points[1]}</div>
+                            <div>
+                                <TwitterShareButton url="https://reversi.fazerog02.dev" title={points[0] - points[1] === 0 ? "4色リバーシで引き分けました！" : `${Math.abs(points[0] - points[1])}点差で4色リバーシで勝利しました！`}>
+                                    <TwitterIcon size={64} round />
+                                </TwitterShareButton>
+                            </div>
+                        </div>
+                    </Dialog>
                 </div>
             }
         </div>

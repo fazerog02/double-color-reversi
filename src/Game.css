@@ -5,6 +5,8 @@
 }
 .field{
     border: 1px solid black;
+    width: 80vmin;
+    height: 80vmin;
 }
 .fieldLine {
     display: flex;
@@ -15,16 +17,17 @@
     border: 1px solid black;
 }
 .stoneFrame div{
+    position: relative;
     width: 90%;
     height: 90%;
     margin: 5%;
-    position: relative;
 }
 
 
 .stoneElement{
     background-size: 100% !important;
     border-radius: 50%;
+    border: 1px solid #797979;
 }
 .stoneElement span{
     position: absolute;
@@ -35,37 +38,43 @@
 
 .player1Info{
     position: absolute;
-    left: 2.5vmax;
-    top: 2.5vmax;
+    left: 2vmax;
+    top: 2vmax;
 }
 .player2Info{
     position: absolute;
-    right: 2.5vmax;
-    top: 2.5vmax;
+    right: 2vmax;
+    top: 2vmax;
 }
 .playerInfo{
-    width: 15vmax;
-    height: 12vmax;
     display: grid;
-    grid-template-columns: 66% 1fr;
-    grid-template-rows: 40% 40% 1fr;
+    grid-template-columns: 5% 60% 30% 5%;
+    grid-template-rows: 5% 30% 30% 1fr 5%;
+
+    width: 12vmax;
+    height: 12vmax;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: .25rem;
+
     opacity: 0.5;
     transition: opacity 500ms ease, transform 500ms ease;
-    border: 1px solid rgba(0,0,0,.125);
-    padding: 5px;
-    background-color: white;
-    border-radius: .25rem;
+}
+@media screen and (orientation: portrait) {
+    .playerInfo{
+        width: 20vmax;
+        height: 20vmax;
+    }
 }
 
 .infoStoneFrame{
-    grid-column: 1 / 2;
-    grid-row: 1 / 3;
+    grid-column: 2 / 3;
+    grid-row: 2 / 4;
     border: 1px solid #b7b7b7;
     border-radius: .25rem;
 }
 .nextInfoStoneFrame{
-    grid-column: 2 / 3;
-    grid-row: 2 / 3;
+    grid-column: 3 / 4;
+    grid-row: 3 / 4;
     border: 1px solid #b7b7b7;
     border-left: none;
     border-radius: .25rem;
@@ -77,11 +86,13 @@
 }
 
 .playerInfoName{
-    grid-column: 1 / 2;
-    grid-row: 3 / 4;
+    grid-column: 2 / 3;
+    grid-row: 4 / 5;
+
     display: flex;
     justify-content: center;
-    align-content: center;
+    align-items: center;
+
     background-color: #558aec;
     border-radius: .25rem;
     margin: 5px;
@@ -89,11 +100,13 @@
 }
 
 .playerInfoPoint{
-    grid-column: 2 / 3;
-    grid-row: 3 / 4;
+    grid-column: 3 / 4;
+    grid-row: 4 / 5;
+
     display: flex;
     justify-content: center;
-    align-content: center;
+    align-items: center;
+
     background-color: #8f8f8f;
     border-radius: .25rem;
     margin: 5px;
@@ -103,4 +116,84 @@
 .turnPlayer{
     opacity: 1;
     transform: scale(1.2, 1.2);
+}
+
+
+.fullScreen{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+.dialogCloseButton{
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    font-size: 300%;
+    font-weight: bold;
+
+    border: none;
+    background-color: white;
+    padding: 10px;
+}
+
+.dialogOuter{
+    opacity: 0.5;
+    background-color: #373737;
+}
+.dialogInner{
+    position: absolute;
+    left: 50vw;
+    top: 50vh;
+    transform: translate(-50%, -50%);
+
+    width: 40vw;
+    height: 70vh;
+    min-width: 300px;
+
+    background-color: white;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: .5rem;
+    z-index: 100;
+}
+
+.resultOpenButton{
+    position: absolute;
+    right: 2vmax;
+    bottom: 2vmax;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 10vmax;
+    height: 5vmax;
+    font-size: 150%;
+    color: white;
+    background-color: #06bf52;
+    border-radius: .5rem;
+}
+
+.resultDialog{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+
+    width: 100%;
+    height: 100%;
+}
+.resultTitle{
+    font-size: 250%;
+    margin-bottom: 50px;
+    padding: 0 20px;
+    border-bottom: 1px solid #000000;
+}
+.resultPoints{
+    font-size: 150%;
+    margin-bottom: 50px;
 }
