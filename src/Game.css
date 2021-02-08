@@ -1,20 +1,40 @@
+.gameInit{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+
+    width: 100vw;
+    height: 100vh;
+}
+
+.gameTitle{
+    font-size: 350%;
+    margin: 0 50px 50px;
+}
+
+
 .fieldWrapper{
     position: absolute;
     left: calc(50vw - 40vmin);
     top: calc(50vh - 40vmin);
 }
 .field{
-    border: 1px solid black;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
     width: 80vmin;
     height: 80vmin;
-}
-.fieldLine {
-    display: flex;
+    /*border: 1px solid black;*/
+    box-sizing: border-box;
 }
 
 
 .stoneFrame{
     border: 1px solid black;
+    box-sizing: border-box;
 }
 .stoneFrame div{
     position: relative;
@@ -27,7 +47,6 @@
 .stoneElement{
     background-size: 100% !important;
     border-radius: 50%;
-    border: 1px solid #797979;
 }
 .stoneElement span{
     position: absolute;

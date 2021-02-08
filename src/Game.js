@@ -269,39 +269,45 @@ export default function Game() {
     return(
         <div>
             {!isGameStart ?
-                <div>
-                    <div style={{display: "inline-block"}}>
-                        <input name="player0" type="text" value={playerNames[0]} onChange={(e) => onChangePlayerName(e)} />
-                        <p>色1</p>
-                        <AvatarSelect defaultColor={playerColors[0]} setState={(avatar) => {
-                            if(!playerColors.includes(avatar)) setPlayerColor(avatar, 0);
-                        }} />
-                        <p>色2</p>
-                        <AvatarSelect defaultColor={playerColors[2]} setState={(avatar) => {
-                            if(!playerColors.includes(avatar)) setPlayerColor(avatar, 2);
-                        }} />
+                <div className="gameInit">
+                    <div className="gameTitle">4色リバーシ</div>
+
+                    <div>
+                        <div style={{display: "inline-block", marginRight: "30px"}}>
+                            <input name="player0" type="text" value={playerNames[0]} onChange={(e) => onChangePlayerName(e)} />
+                            <p>色1</p>
+                            <AvatarSelect defaultColor={playerColors[0]} setState={(avatar) => {
+                                if(!playerColors.includes(avatar)) setPlayerColor(avatar, 0);
+                            }} />
+                            <p>色2</p>
+                            <AvatarSelect defaultColor={playerColors[2]} setState={(avatar) => {
+                                if(!playerColors.includes(avatar)) setPlayerColor(avatar, 2);
+                            }} />
+                        </div>
+                        <div style={{display: "inline-block", marginLeft: "30px"}}>
+                            <input name="player1" type="text" value={playerNames[1]} onChange={(e) => onChangePlayerName(e)} />
+                            <p>色1</p>
+                            <AvatarSelect defaultColor={playerColors[1]} setState={(avatar) => {
+                                if(!playerColors.includes(avatar)) setPlayerColor(avatar, 1);
+                            }} />
+                            <p>色2</p>
+                            <AvatarSelect defaultColor={playerColors[3]} setState={(avatar) => {
+                                if(!playerColors.includes(avatar)) setPlayerColor(avatar, 3);
+                            }} />
+                        </div>
+                        <div style={{marginTop: "50px"}}>
+                            <button style={{width: "80%", marginLeft: "10%"}} type="button" onClick={() => startGame()}>start</button>
+                        </div>
                     </div>
-                    <div style={{display: "inline-block"}}>
-                        <input name="player1" type="text" value={playerNames[1]} onChange={(e) => onChangePlayerName(e)} />
-                        <p>色1</p>
-                        <AvatarSelect defaultColor={playerColors[1]} setState={(avatar) => {
-                            if(!playerColors.includes(avatar)) setPlayerColor(avatar, 1);
-                        }} />
-                        <p>色2</p>
-                        <AvatarSelect defaultColor={playerColors[3]} setState={(avatar) => {
-                            if(!playerColors.includes(avatar)) setPlayerColor(avatar, 3);
-                        }} />
-                    </div>
-                    <button style={{display: "block"}} type="button" onClick={() => startGame()}>start</button>
                 </div>
             :
                 <div>
                     <div className={"player1Info playerInfo" + (turn % 2 === 0 ? " turnPlayer" : "")}>
                         <div className="infoStoneFrame">
-                            <StoneElement className="infoStone" color={turn % 2 === 0 ? playerColors[(0 + turn) % 4] : playerColors[(0 + (turn-1)) % 4]} value={null} />
+                            <StoneElement className="infoStone" color={turn % 2 === 0 ? playerColors[(0 + turn) % 4] : playerColors[(0 + (turn+1)) % 4]} value={null} />
                         </div>
                         <div className="nextInfoStoneFrame">
-                            <StoneElement className="infoStone" color={turn % 2 === 0 ? playerColors[(2 + turn) % 4] : playerColors[(2 + (turn-1)) % 4]} value={null}  />
+                            <StoneElement className="infoStone" color={turn % 2 === 0 ? playerColors[(2 + turn) % 4] : playerColors[(2 + (turn+1)) % 4]} value={null}  />
                         </div>
                         <div className="playerInfoName"><span>{playerNames[0]}</span></div>
                         <div className="playerInfoPoint">{points[0]}</div>

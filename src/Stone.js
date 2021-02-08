@@ -26,7 +26,7 @@ export default function Stone(props){
         <div
             style={{
                 width: props.size,
-                height: "100%",
+                height: props.size,
                 backgroundColor: props.isSettable ? "#ffa399" : "transparent"
             }}
             className="stoneFrame"

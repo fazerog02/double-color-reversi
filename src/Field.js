@@ -38,14 +38,16 @@ export default function Field(props){
             const stone = createStone(position, props.data[row][col]);
             stone_line.push(stone);
         }
-        return <div key={row.toString()} className="fieldLine" style={{height: 100 / props.size + "%"}}>{stone_line}</div>;
+        // return <div key={row.toString()} className="fieldLine" style={{height: 100 / props.size + "%"}}>{stone_line}</div>;
+        return stone_line;
     };
 
     const initFiled = () => {
         let stone_field = [];
         for(let row = 0; row < props.size; row++){
-            stone_field.push(initFieldLine(row));
+            stone_field = stone_field.concat(initFieldLine(row));
         }
+
         return <div className="field">{stone_field}</div>;
     };
 
