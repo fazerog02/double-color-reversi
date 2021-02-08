@@ -2,7 +2,7 @@
   "name": "double-color-reversi",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://fazerog02.github.io/HyperReversi",
+  "homepage": "https://reversi.fazerog02.dev",
   "dependencies": {
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
